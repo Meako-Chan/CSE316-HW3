@@ -17,7 +17,8 @@ export const GlobalStoreActionType = {
     CLOSE_CURRENT_LIST: "CLOSE_CURRENT_LIST",
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
-    SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE"
+    SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
+    CREATE_NEW_LIST: "CREATE_NEW_LIST"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -96,14 +97,50 @@ export const useGlobalStore = () => {
                     listMarkedForDeletion: null
                 });
             }
+            // CREATE A NEW LIST
+            // CREATE LIST
+            case GlobalStoreActionType.CREATE_NEW_LIST: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: payload,
+                    newListCounter: store.newListCounter + 1,
+                    isListNameEditActive: false,
+                    isItemEditActive: false,
+                    listMarkedForDeletion: null
+                })
+            }
             default:
                 return store;
+        
         }
     }
     // THESE ARE THE FUNCTIONS THAT WILL UPDATE OUR STORE AND
     // DRIVE THE STATE OF THE APPLICATION. WE'LL CALL THESE IN 
     // RESPONSE TO EVENTS INSIDE OUR COMPONENTS.
+    // CREATE LIST
+    store.createTop5List = function () {
+        async function asyncCreateList() {
+            const createdList = {
+                name: "Untitled",
+                items: ["?", "?", "?", "?", "?"]
+            };
+            let response = await api.createTop5List(createdList);
+            if (response.data.success) {
+                console.log("Created a new list!");
+                const newListId = response.data.top5List._id;
+                // //storeReducer({
+                //     type: GlobalStoreActionType.CREATE_NEW_LIST,
+                //     payload: store.currentList,
+                // });
+                store.setCurrentList(newListId);
+            }
+            else {
+                console.log("List not created");
+            }
 
+        }
+        asyncCreateList();
+    }
     // THIS FUNCTION PROCESSES CHANGING A LIST NAME
     store.changeListName = function (id, newName) {
         // GET THE LIST
