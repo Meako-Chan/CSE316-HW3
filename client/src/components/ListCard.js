@@ -40,6 +40,7 @@ function ListCard(props) {
     }
 
     function handleKeyPress(event) {
+        console.log(event.target);
         if (event.code === "Enter") {
             let id = event.target.id.substring("list-".length);
             store.changeListName(id, text);
@@ -47,8 +48,11 @@ function ListCard(props) {
         }
     }
 
-    function handleUpdateText(event) {
-        setText(event.target.value );
+    function handleUpdateText(event){
+        if(event.target.value == ""){
+            event.target.value = " ";
+        }
+        setText(event.target.value);
     }
 
     let selectClass = "unselected-list-card";
