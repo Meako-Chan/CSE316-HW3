@@ -15,10 +15,16 @@ function DeleteModal() {
     if (store.currentList) {
         name = store.currentList.name;
     }
+    if (store.listMarkedForDeletion) {
+        let modal = document.getElementById("delete-modal");
+        modal.className = modal.className + " is-visible";
+    }
     function handleDeleteList(event) {
-        store.deleteMarkedList();
+        store.deleteMarkedList(store.currentList._id);
+        document.getElementById("delete-modal").className = "modal";
     }
     function handleCloseModal(event) {
+        document.getElementById("delete-modal").className = "modal";
         store.hideDeleteListModal();
     }
     return (

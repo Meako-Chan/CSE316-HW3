@@ -20,11 +20,14 @@ export const GlobalStoreActionType = {
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     SET_ITEM_NAME_EDIT_ACTIVE: "SET_ITEM_NAME_EDIT_ACTIVE",
-    CREATE_NEW_LIST: "CREATE_NEW_LIST"
+    CREATE_NEW_LIST: "CREATE_NEW_LIST",
+    SET_DELETE_LIST: "SET_DELETE_LIST", 
+    UNSET_DELETE_LIST: "UNSET_DELETE_LIST", 
+    CONFIRM_DELETE_LIST: "CONFIRM_DELETE_LIST"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
-const tps = new jsTPS();
+export const tps = new jsTPS();
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
 // AVAILABLE TO THE REST OF THE APPLICATION
@@ -106,6 +109,39 @@ export const useGlobalStore = () => {
                     idNamePairs: store.idNamePairs,
                     currentList: payload,
                     newListCounter: (store.newListCounter++),
+                    isListNameEditActive: false,
+                    isItemEditActive: false,
+                    listMarkedForDeletion: null
+                })
+            }
+            // SELECT LIST TO DELETE / OPEN MODAL
+            case GlobalStoreActionType.SET_DELETE_LIST: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: payload,
+                    newListCounter: store.newListCounter,
+                    isListNameEditActive: false,
+                    isItemEditActive: false,
+                    listMarkedForDeletion: payload
+                })
+            }
+            // UNSELECT LIST TO DELETE / CLOSE MODAL
+            case GlobalStoreActionType.UNSET_DELETE_LIST: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: null,
+                    newListCounter: store.newListCounter,
+                    isListNameEditActive: false,
+                    isItemEditActive: false,
+                    listMarkedForDeletion: null
+                })
+            }
+            // CONFIRM DELETE LIST AND CLOSE MODAL
+            case GlobalStoreActionType.CONFIRM_DELETE_LIST: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: null,
+                    newListCounter: store.newListCounter-1,
                     isListNameEditActive: false,
                     isItemEditActive: false,
                     listMarkedForDeletion: null
@@ -251,7 +287,6 @@ export const useGlobalStore = () => {
         store.updateCurrentList();
     }
     store.addChangeItemTransaction = function(id, newText){
-            console.log("added changeItemTransaction");
             let oldText = store.currentList.items[id];
             let transaction = new ChangeItem_Transaction(this, id, oldText, newText);
             tps.addTransaction(transaction);
@@ -275,12 +310,16 @@ export const useGlobalStore = () => {
     }
     store.undo = function () {
         tps.undoTransaction();
-        console.log(tps);
     }
     store.redo = function () {
         tps.doTransaction();
     }
-
+    store.hasUndo = function(){
+        return store.tps.hasTransactionToUndo();
+    }
+    store.hasRedo = function(){
+        return store.tps.hasTransactionToUndo();
+    }
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
     store.setIsListNameEditActive = function () {
         storeReducer({
@@ -293,6 +332,40 @@ export const useGlobalStore = () => {
             type: GlobalStoreActionType.SET_ITEM_NAME_EDIT_ACTIVE,
             payload: null
         });
+    }
+    store.handleOpenModal = function (id) {
+        // console.log(id);
+        async function setListForDeletion() {
+            let response = await api.getTop5ListById(id);
+            if (response.data.success) {
+                const selectedList = response.data.top5List;
+                storeReducer({
+                    type: GlobalStoreActionType.SET_DELETE_LIST,
+                    payload: selectedList
+                });
+                
+            }
+        }
+        setListForDeletion();
+    }
+    store.hideDeleteListModal = function() {
+        storeReducer({
+            type: GlobalStoreActionType.UNSET_DELETE_LIST,
+            payload: {}
+        });
+    }
+    store.deleteMarkedList = function(id) {
+        async function confirmDeleteList() {
+            let response = await api.deleteTop5ListById(id);
+            if (response.data.success) {
+                storeReducer({
+                    type: GlobalStoreActionType.CONFIRM_DELETE_LIST,
+                    payload: {}
+                });
+                store.loadIdNamePairs();
+            }
+        }
+        confirmDeleteList();
     }
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
     return { store, storeReducer };

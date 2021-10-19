@@ -54,6 +54,15 @@ function ListCard(props) {
         console.log(event.target.defaultValue);
         setText(event.target.value);
     }
+    function handleOpenModal(event) {
+        event.stopPropagation();
+        let _id = event.target.id;
+        if (_id.indexOf('delete-list-') >= 0){
+            _id = ("" + _id).substring("delete-list-".length);
+            console.log(_id);
+        }
+        store.handleOpenModal(_id)
+    }
 
     let selectClass = "unselected-list-card";
     if (selected) {
@@ -80,6 +89,7 @@ function ListCard(props) {
                 type="button"
                 id={"delete-list-" + idNamePair._id}
                 className="list-card-button"
+                onClick={handleOpenModal}
                 
                 value={"\u2715"}
             />
