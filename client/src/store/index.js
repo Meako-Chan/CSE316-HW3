@@ -18,6 +18,7 @@ export const GlobalStoreActionType = {
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
+    SET_ITEM_NAME_EDIT_ACTIVE: "SET_ITEM_NAME_EDIT_ACTIVE",
     CREATE_NEW_LIST: "CREATE_NEW_LIST"
 }
 
@@ -274,7 +275,12 @@ export const useGlobalStore = () => {
             payload: null
         });
     }
-
+    store.setIsItemNameEditActive = function () {
+        storeReducer({
+            type: GlobalStoreActionType.SET_ITEM_NAME_EDIT_ACTIVE,
+            payload: null
+        });
+    }
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
     return { store, storeReducer };
 }

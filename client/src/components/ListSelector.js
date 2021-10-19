@@ -14,6 +14,7 @@ const ListSelector = () => {
 
     useEffect(() => {
         store.loadIdNamePairs();
+        store.closeCurrentList();
     }, []);
     // CREATE LIST
     function handleCreateList() {
