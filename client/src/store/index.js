@@ -102,6 +102,16 @@ export const useGlobalStore = () => {
                     listMarkedForDeletion: null
                 });
             }
+            case GlobalStoreActionType.SET_ITEM_NAME_EDIT_ACTIVE: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    isListNameEditActive: false,
+                    isItemEditActive: true,
+                    listMarkedForDeletion: null
+                });
+            }
             // CREATE A NEW LIST
             // CREATE LIST
             case GlobalStoreActionType.CREATE_NEW_LIST: {
@@ -219,6 +229,7 @@ export const useGlobalStore = () => {
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
             payload: {}
         });
+        tps.clearAllTransactions();
     }
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
@@ -244,7 +255,9 @@ export const useGlobalStore = () => {
     // FUNCTIONS ARE setCurrentList, addMoveItemTransaction, addUpdateItemTransaction,
     // moveItem, updateItem, updateCurrentList, undo, and redo
     store.setCurrentList = function (id) {
+        
         async function asyncSetCurrentList(id) {
+           
             let response = await api.getTop5ListById(id);
             if (response.data.success) {
                 let top5List = response.data.top5List;
@@ -256,10 +269,13 @@ export const useGlobalStore = () => {
                         payload: top5List
                     });
                     store.history.push("/top5list/" + top5List._id);
-                }
             }
         }
+        }
+       if(!store.isListNameEditActive){
         asyncSetCurrentList(id);
+       }
+        
     }
     store.addMoveItemTransaction = function (start, end) {
         let transaction = new MoveItem_Transaction(store, start, end);
@@ -315,10 +331,10 @@ export const useGlobalStore = () => {
         tps.doTransaction();
     }
     store.hasUndo = function(){
-        return store.tps.hasTransactionToUndo();
+        return tps.hasTransactionToUndo();
     }
     store.hasRedo = function(){
-        return store.tps.hasTransactionToUndo();
+        return tps.hasTransactionToRedo();
     }
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
     store.setIsListNameEditActive = function () {

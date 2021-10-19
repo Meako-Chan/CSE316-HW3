@@ -11,14 +11,17 @@ import DeleteModal from './DeleteModal'
 const ListSelector = () => {
     const { store } = useContext(GlobalStoreContext);
     store.history = useHistory();
-
+    // const{focused, setfocus } = useState(false);
     useEffect(() => {
         store.loadIdNamePairs();
         store.closeCurrentList();
+        
     }, []);
     // CREATE LIST
     function handleCreateList() {
+        if(!store.isListNameEditActive){
         store.createTop5List();
+        }
     }
     let listCard = "";
     if (store) {
@@ -36,7 +39,7 @@ const ListSelector = () => {
                 <input
                     type="button"
                     id="add-list-button"
-                    className="top5-button"
+                    className= {store.isListNameEditActive ?  "top5-button-disabled" : "top5-button" }
                     onClick={handleCreateList}
                     value="+" />
                 Your Lists

@@ -1,4 +1,4 @@
-import { React, useContext, useState } from "react";
+import { React, useContext, useState, useEffect } from "react";
 import { useHistory } from 'react-router-dom'
 import { GlobalStoreContext } from '../store'
 /*
@@ -14,9 +14,13 @@ function Top5Item(props) {
     store.history = useHistory();
     // const { currentList, selected } = props;
     // const [ inputText, setText ] = useState(store.currentList.items);
+    
 
     function handleDragStart(event) {
-        event.dataTransfer.setData("item", event.target.id);
+        if (store.isItemEditActive===false){
+            event.dataTransfer.setData("item", event.target.id);
+        }
+        
     }
 
     function handleDragOver(event) {
@@ -33,27 +37,36 @@ function Top5Item(props) {
         setDraggedTo(false);
     }
     function handleKeyPress(event) {
+        event.stopPropagation();
         if(event.code === "Enter") {
 
            let id = event.target.id.substring("item-".length);
         //    console.log(event.target.value);
         //    console.log(store.currentList.items[id]);
         //    store.currentList.items[id] = event.target.value;   
-           
+           if(event.target.value !== store.currentList.items[id]){
            store.addChangeItemTransaction(id,event.target.value);
+           }
            toggleEdit();
            store.updateCurrentList();
            
        }
    }
    function handleOnBlur(event) {
+       console.log(event.target);
+       if(event.target.className.includes("top5-button")){
+           console.log("Top 5 button clicked");
+       }
         let id = event.target.id.substring("item-".length);
         console.log(event.target.value);
         console.log(store.currentList.items[id]);
         store.currentList.items[id] = event.target.value;   
-        toggleEdit();
-        store.addChangeItemTransaction(id,event.target.value);
+
+        if(event.target.value !== store.currentList.items[id]){
+            store.addChangeItemTransaction(id,event.target.value);
+            }
         store.updateCurrentList();
+        toggleEdit();
 }
 
     function handleDrop(event) {
@@ -69,15 +82,31 @@ function Top5Item(props) {
         store.addMoveItemTransaction(sourceId, targetId);
     }
     function handleToggleEdit(event){
-        event.stopPropagation();
-        toggleEdit();
+        // event.stopPropagation();
+        console.log("ajsodflsaf "+editActive.toString());
+        if (store.isItemEditActive){
+
+        }
+        else {
+            toggleEdit();
+        }
     }
     function toggleEdit() {
+        console.log(editActive);
         let newActive = !editActive;
-        if (newActive) {
-            store.setIsItemNameEditActive();
-        }
-        setEditActive(newActive);
+        // if(!store.isItemEditActive){
+            if (newActive) {
+                // console.log(editActive);
+                setEditActive(newActive);
+                store.setIsItemNameEditActive();
+            }
+            // store.setIsItemNameEditActive();
+            setEditActive(newActive);
+            console.log("Changed to "+newActive);
+            
+        // }
+        // setEditActive(newActive);
+        // console.log("Changed to "+newActive);
     }
     // function handleUpdateText(event){
     //     if(event.target.value === ""){
@@ -104,12 +133,12 @@ function Top5Item(props) {
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            draggable="true"
+            draggable={store.isItemEditActive ? "false" : "true"}
         >
             <input
                 type="button"
                 id={"edit-item-" + index + 1}
-                className="list-card-button"
+                className={store.isItemEditActive ? "list-card-button-disabled" : "list-card-button"  } 
                 onClick={handleToggleEdit}
                 value={"\u270E"}
             />

@@ -77,7 +77,7 @@ function ListCard(props) {
             id={idNamePair._id}
             key={idNamePair._id}
             onClick={handleLoadList}
-            className={'list-card ' + selectClass}>
+            className={store.isListNameEditActive ? 'list-card ' + selectClass + 'aria-disabled': 'list-card ' + selectClass}>
             <span
                 id={"list-card-text-" + idNamePair._id}
                 key={"span-" + idNamePair._id}

@@ -173,6 +173,10 @@ body {
   float:right;
   font-size:18pt;
 }
+.list-card-button-disabled {
+  opacity: 0.25; 
+  cursor: not-allowed;
+}
 
 #workspace-home, #workspace-edit {
   position:absolute;
