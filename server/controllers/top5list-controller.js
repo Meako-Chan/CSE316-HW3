@@ -50,12 +50,12 @@ console.log("updateTop5List: " + JSON.stringify(body));
     }
 
     Top5List.findOne({ _id: req.params.id }, (err, top5List) => {
-        if (err) {
-            return res.status(404).json({
-                err,
-                message: 'Top 5 List not found!',
-            })
-        }
+        // if (err) {
+        //     return res.status(404).json({
+        //         err,
+        //         message: 'Top 5 List not found!',
+        //     })
+        // }
         top5List.name = body.name
         top5List.items = body.items
         top5List
@@ -68,13 +68,13 @@ console.log("updateTop5List: " + JSON.stringify(body));
                     message: 'Top 5 List updated!',
                 })
             })
-            .catch(error => {
-                console.log("FAILURE: " + JSON.stringify(error));
-                return res.status(404).json({
-                    error,
-                    message: 'Top 5 List not updated!',
-                })
-            })
+            // .catch(error => {
+            //     console.log("FAILURE: " + JSON.stringify(error));
+            //     return res.status(404).json({
+            //         error,
+            //         message: 'Top 5 List not updated!',
+            //     })
+            // })
     })
 }
 deleteTop5List = async (req, res) => {
@@ -83,11 +83,11 @@ deleteTop5List = async (req, res) => {
             return res.status(400).json({ success: false, error: err })
         }
 
-        if (!top5List) {
-            return res
-                .status(404)
-                .json({ success: false, error: `Top 5 List not found` })
-        }
+        // if (!top5List) {
+        //     return res
+        //         .status(404)
+        //         .json({ success: false, error: `Top 5 List not found` })
+        // }
 
         return res.status(200).json({ success: true, data: top5List })
     }).catch(err => console.log(err))

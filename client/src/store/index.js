@@ -2,6 +2,7 @@ import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
 import MoveItem_Transaction from '../transactions/MoveItem_Transaction'
+import ChangeItem_Transaction from '../transactions/ChangeItem_Transaction'
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -249,6 +250,17 @@ export const useGlobalStore = () => {
         // NOW MAKE IT OFFICIAL
         store.updateCurrentList();
     }
+    store.addChangeItemTransaction = function(id, newText){
+            console.log("added changeItemTransaction");
+            let oldText = store.currentList.items[id];
+            let transaction = new ChangeItem_Transaction(this, id, oldText, newText);
+            tps.addTransaction(transaction);
+        
+    }
+    store.renameItem = function(id, newText){
+        store.currentList.items[id] = newText;
+        store.updateCurrentList();
+    }
     store.updateCurrentList = function() {
         async function asyncUpdateCurrentList() {
             const response = await api.updateTop5ListById(store.currentList._id, store.currentList);
@@ -263,6 +275,7 @@ export const useGlobalStore = () => {
     }
     store.undo = function () {
         tps.undoTransaction();
+        console.log(tps);
     }
     store.redo = function () {
         tps.doTransaction();
