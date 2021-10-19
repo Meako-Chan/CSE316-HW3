@@ -31,7 +31,7 @@ function EditToolbar() {
     }
 
     function isCloseDisabled(){
-        if (store.currentList && (store.listMarkedForDeletion==null)){
+        if (store.currentList !== null && (store.listMarkedForDeletion==null)){
             setOpenList(true);
         }
         else {
@@ -80,7 +80,7 @@ function EditToolbar() {
                 disabled={editStatus}
                 id='close-button'
                 onClick={handleClose}
-                className={(openList && !canUndoActive) ? enabledButtonClass : "top5-button-disabled"}>
+                className={(openList && !canUndoActive ) ? enabledButtonClass : "top5-button-disabled"}>
                 &#x24E7;
             </div>
         </div>

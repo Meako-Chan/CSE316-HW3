@@ -52,22 +52,22 @@ function Top5Item(props) {
            
        }
    }
-   function handleOnBlur(event) {
-       console.log(event.target);
-       if(event.target.className.includes("top5-button")){
-           console.log("Top 5 button clicked");
-       }
-        let id = event.target.id.substring("item-".length);
-        console.log(event.target.value);
-        console.log(store.currentList.items[id]);
-        store.currentList.items[id] = event.target.value;   
+//    function handleOnBlur(event) {
+//        console.log(event.target);
+//        if(event.target.className.includes("top5-button")){
+//            console.log("Top 5 button clicked");
+//        }
+//         let id = event.target.id.substring("item-".length);
+//         console.log(event.target.value);
+//         console.log(store.currentList.items[id]);
+//         store.currentList.items[id] = event.target.value;   
 
-        if(event.target.value !== store.currentList.items[id]){
-            store.addChangeItemTransaction(id,event.target.value);
-            }
-        store.updateCurrentList();
-        toggleEdit();
-}
+//         if(event.target.value !== store.currentList.items[id]){
+//             store.addChangeItemTransaction(id,event.target.value);
+//             }
+//         store.updateCurrentList();
+//         toggleEdit();
+// }
 
     function handleDrop(event) {
         event.preventDefault();
@@ -152,7 +152,7 @@ function Top5Item(props) {
                 type='text'
                 onKeyPress={handleKeyPress}
                 /*onChange={handleUpdateText}*/
-                onBlur={handleOnBlur}
+                // onBlur={handleOnBlur}
                 defaultValue={store.currentList.items[index]}
                 />;
         }
